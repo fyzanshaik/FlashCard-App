@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -15,7 +16,11 @@ interface AdminHeaderProps {
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard }) => {
 	const { register, handleSubmit, reset } = useForm<FormValues>();
+	const navigate = useNavigate();
 
+	const handleClick = () => {
+		navigate('/start-revision');
+	};
 	const onSubmit: SubmitHandler<FormValues> = (data) => {
 		onAddFlashCard(data);
 		reset();
@@ -25,10 +30,14 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard }) => {
 		<>
 			<div className="col-span-2">
 				<div className="text-4xl font-bold text-center py-4 font-mono text-gray-800">Flash Cards</div>
-				<Button variant="outline">Start Revision</Button>
+				<Button variant="outline" onClick={handleClick} className="bg-mirage text-white">
+					Start Revision
+				</Button>
 				<Dialog>
 					<DialogTrigger asChild>
-						<Button variant="outline">Add a new Flash Card</Button>
+						<Button variant="outline" className="bg-mirage text-white">
+							Add a new Flash Card
+						</Button>
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-[425px] bg-black">
 						<DialogHeader>
