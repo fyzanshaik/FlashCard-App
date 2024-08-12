@@ -9,46 +9,55 @@ interface CardsList {
 	Title: string;
 	Answer: string;
 }
+interface FormValues {
+	Title: string;
+	Answer: string;
+}
 const AdminDashboard = () => {
+	// const localURL = import.meta.env.VITE_LOCALURL;
+	const API_URL = import.meta.env.VITE_AWSURL;
+	console.log(API_URL);
 	const [flashCards, setFlashCards] = useState<CardsList[]>([]);
 	const [loading, setLoading] = useState(false);
-	const handleAddFlashCard = (newCard: CardsList) => {
-		console.log(newCard);
-		axios
-			.post('http://localhost:8080/add-flash-card', newCard)
-			.then(() => {
-				setLoading(true);
-			})
-			.catch((err) => console.log(err));
+	const handleAddFlashCard = async (newCard: FormValues) => {
+		try {
+			console.log(newCard);
+			const cardWithId: CardsList = { ...newCard, id: Date.now() };
+			await axios.post(`${API_URL}add-flash-card`, cardWithId);
+			setLoading(true);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
-	const handleEditFlashCard = (updatedCard: CardsList, id: number) => {
-		// console.log(updatedCard, id);
-		axios
-			.put(`http://localhost:8080/edit-flash-card/${id}`, updatedCard)
-			.then(() => {
-				setLoading(true);
-			})
-			.catch((err) => console.log(err));
+	const handleEditFlashCard = async (updatedCard: FormValues, id: number) => {
+		try {
+			const cardWithId: CardsList = { ...updatedCard, id };
+			await axios.put(`${API_URL}edit-flash-card/${id}`, cardWithId);
+			setLoading(true);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
-	const handleDeleteFlashCard = (id: number) => {
-		axios
-			.delete(`http://localhost:8080/delete-flash-card/${id}`)
-			.then(() => {
-				setLoading(true);
-			})
-			.catch((err) => console.log(err));
+	const handleDeleteFlashCard = async (id: number) => {
+		try {
+			await axios.delete(`${API_URL}delete-flash-card/${id}`);
+			setLoading(true);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	useEffect(() => {
 		setLoading(true);
-		axios.get<CardsList[]>('http://localhost:8080/get-flash-cards').then((response) => {
-			// console.log(response.data);
+		const getFlashCards = async () => {
+			const response = await axios.get<CardsList[]>(`${API_URL}get-flash-cards`);
 			setFlashCards(response.data);
 			setLoading(false);
-		});
-	}, [loading]);
+		};
+		getFlashCards();
+	}, [API_URL]);
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">

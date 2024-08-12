@@ -9,11 +9,9 @@ interface ListItemProps {
 	title: string;
 	value: string;
 	id: number;
-
 	onEditFlashCard: (data: FormValues, id: number) => void;
 	onDeleteFlashCard: (id: number) => void;
 }
-
 interface FormValues {
 	Title: string;
 	Answer: string;

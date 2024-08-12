@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 
 import AdminDashboard from './components/AdminDashboard';
@@ -8,6 +8,7 @@ export const App = () => {
 		<div className="">
 			<BrowserRouter>
 				<Routes>
+					<Route path="/" element={<Navigate to="/dashboard" />} />
 					<Route path="/dashboard" element={<AdminDashboard />}></Route>
 					<Route path="/start-revision" element={<RevisionPage />}></Route>
 				</Routes>

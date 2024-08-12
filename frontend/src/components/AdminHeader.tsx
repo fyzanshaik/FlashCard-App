@@ -19,7 +19,6 @@ interface AdminHeaderProps {
 	onAddFlashCard: (data: FormValues) => void;
 	data: CardsList[];
 }
-
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard, data }) => {
 	const { register, handleSubmit, reset } = useForm<FormValues>();
 	const navigate = useNavigate();
