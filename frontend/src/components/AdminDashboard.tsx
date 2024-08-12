@@ -15,7 +15,7 @@ interface FormValues {
 }
 const AdminDashboard = () => {
 	// const localURL = import.meta.env.VITE_LOCALURL;
-	const API_URL = import.meta.env.VITE_AWSURL;
+	const API_URL = import.meta.env.VITE_VERCEL;
 	// console.log(API_URL);
 	const [flashCards, setFlashCards] = useState<CardsList[]>([]);
 	const [loading, setLoading] = useState(false);
