@@ -16,15 +16,16 @@ interface FormValues {
 const AdminDashboard = () => {
 	// const localURL = import.meta.env.VITE_LOCALURL;
 	const API_URL = import.meta.env.VITE_AWSURL;
-	console.log(API_URL);
+	// console.log(API_URL);
 	const [flashCards, setFlashCards] = useState<CardsList[]>([]);
 	const [loading, setLoading] = useState(false);
 	const handleAddFlashCard = async (newCard: FormValues) => {
 		try {
+			setLoading(true);
 			console.log(newCard);
 			const cardWithId: CardsList = { ...newCard, id: Date.now() };
-			await axios.post(`${API_URL}add-flash-card`, cardWithId);
-			setLoading(true);
+			await axios.post(`${API_URL}/add-flash-card`, cardWithId);
+			setLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -32,9 +33,10 @@ const AdminDashboard = () => {
 
 	const handleEditFlashCard = async (updatedCard: FormValues, id: number) => {
 		try {
-			const cardWithId: CardsList = { ...updatedCard, id };
-			await axios.put(`${API_URL}edit-flash-card/${id}`, cardWithId);
 			setLoading(true);
+			const cardWithId: CardsList = { ...updatedCard, id };
+			await axios.put(`${API_URL}/edit-flash-card/${id}`, cardWithId);
+			setLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -42,8 +44,9 @@ const AdminDashboard = () => {
 
 	const handleDeleteFlashCard = async (id: number) => {
 		try {
-			await axios.delete(`${API_URL}delete-flash-card/${id}`);
 			setLoading(true);
+			await axios.delete(`${API_URL}/delete-flash-card/${id}`);
+			setLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -52,7 +55,7 @@ const AdminDashboard = () => {
 	useEffect(() => {
 		setLoading(true);
 		const getFlashCards = async () => {
-			const response = await axios.get<CardsList[]>(`${API_URL}get-flash-cards`);
+			const response = await axios.get<CardsList[]>(`${API_URL}/get-flash-cards`);
 			setFlashCards(response.data);
 			setLoading(false);
 		};
