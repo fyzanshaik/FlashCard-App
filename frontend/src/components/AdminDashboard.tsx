@@ -18,6 +18,7 @@ const AdminDashboard = () => {
 	const API_URL = import.meta.env.VITE_VERCEL;
 	// console.log(API_URL);
 	const [flashCards, setFlashCards] = useState<CardsList[]>([]);
+	const [stateChange, setStateChange] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const handleAddFlashCard = async (newCard: FormValues) => {
 		try {
@@ -25,6 +26,7 @@ const AdminDashboard = () => {
 			console.log(newCard);
 			const cardWithId: CardsList = { ...newCard, id: Date.now() };
 			await axios.post(`${API_URL}/add-flash-card`, cardWithId);
+			setStateChange(true);
 			setLoading(false);
 		} catch (err) {
 			console.log(err);
@@ -36,6 +38,7 @@ const AdminDashboard = () => {
 			setLoading(true);
 			const cardWithId: CardsList = { ...updatedCard, id };
 			await axios.put(`${API_URL}/edit-flash-card/${id}`, cardWithId);
+			setStateChange(true);
 			setLoading(false);
 		} catch (err) {
 			console.log(err);
@@ -46,6 +49,8 @@ const AdminDashboard = () => {
 		try {
 			setLoading(true);
 			await axios.delete(`${API_URL}/delete-flash-card/${id}`);
+			setStateChange(true);
+
 			setLoading(false);
 		} catch (err) {
 			console.log(err);
@@ -60,7 +65,7 @@ const AdminDashboard = () => {
 			setLoading(false);
 		};
 		getFlashCards();
-	}, [API_URL]);
+	}, [API_URL, stateChange]);
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
