@@ -1,5 +1,4 @@
-import React from 'react';
-import '../../public/flip-card.css';
+import React, { useState } from 'react';
 
 interface FlipCardProps {
 	title: string;
@@ -7,9 +6,15 @@ interface FlipCardProps {
 }
 
 const FlipCard: React.FC<FlipCardProps> = ({ title, answer }) => {
+	const [isFlipped, setIsFlipped] = useState(false);
+
+	const handleClick = () => {
+		setIsFlipped(!isFlipped);
+	};
+
 	return (
-		<div className="flip-card w-[350px] h-[400px] rounded-lg ">
-			<div className="flip-card-inner ">
+		<div className={`flip-card w-[350px] h-[400px] rounded-lg cursor-pointer ${isFlipped ? 'flipped' : ''}`} onClick={handleClick}>
+			<div className="flip-card-inner">
 				<div className="flip-card-front flex items-center justify-center">
 					<div className="w-full h-full bg-gray-300 p-4 rounded-lg shadow-lg flex items-center justify-center">
 						<h1 className="text-2xl font-bold text-gray-800">{title}</h1>

@@ -21,51 +21,52 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard }) => {
 	const handleClick = () => {
 		navigate('/start-revision');
 	};
+
 	const onSubmit: SubmitHandler<FormValues> = (data) => {
 		onAddFlashCard(data);
 		reset();
 	};
 
 	return (
-		<>
-			<div className="col-span-2">
-				<div className="text-4xl font-bold text-center py-4 font-mono text-gray-800">Flash Cards</div>
-				<Button variant="outline" onClick={handleClick} className="bg-mirage text-white">
-					Start Revision
-				</Button>
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="outline" className="bg-mirage text-white">
-							Add a new Flash Card
-						</Button>
-					</DialogTrigger>
-					<DialogContent className="sm:max-w-[425px] bg-black">
-						<DialogHeader>
-							<DialogTitle className="text-white">Add a new Flash Card</DialogTitle>
-							<DialogDescription className="text-slate-400">Fill in the details below to create a new flash card.</DialogDescription>
-						</DialogHeader>
-						<form onSubmit={handleSubmit(onSubmit)}>
-							<div className="grid gap-4 py-4 ">
-								<div className="grid grid-cols-4 items-center gap-4">
-									<Label htmlFor="title" className="text-left text-slate-100">
-										Question:
-									</Label>
-									<Input id="title" {...register('Title', { required: true })} className="col-span-3  bg-black text-white" />
+		<div className="bg-gray-800 text-white p-4 shadow-md">
+			<div className="container mx-auto flex justify-between items-center">
+				<h1 className="text-4xl font-bold text-pink-500">FLASHCARDS</h1>
+				<div className="space-x-4">
+					<Button variant="outline" onClick={handleClick} className="text-white border-gray-400 bg-black hover:bg-slate-600 hover:text-white">
+						Start Revision
+					</Button>
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button variant="outline" className="text-white border-gray-400 bg-black hover:bg-slate-600 hover:text-white">
+								Add New Card
+							</Button>
+						</DialogTrigger>
+						<DialogContent className="bg-black text-white">
+							<DialogHeader>
+								<DialogTitle>Add a new Flash Card</DialogTitle>
+								<DialogDescription className="text-gray-400">Fill in the details below to create a new flash card.</DialogDescription>
+							</DialogHeader>
+							<form onSubmit={handleSubmit(onSubmit)}>
+								<div className="space-y-4 py-4">
+									<div className="space-y-2">
+										<Label htmlFor="title">Question:</Label>
+										<Input id="title" {...register('Title', { required: true })} className="bg-black text-white" />
+									</div>
+									<div className="space-y-2">
+										<Label htmlFor="answer">Answer:</Label>
+										<Input id="answer" {...register('Answer', { required: true })} className="bg-black text-white" />
+									</div>
 								</div>
-								<div className="grid grid-cols-4 items-center gap-4">
-									<Label htmlFor="answer" className="text-left text-slate-100">
-										Answer:
-									</Label>
-									<Input id="answer" {...register('Answer', { required: true })} className="col-span-3 bg-black text-white" />
-								</div>
-							</div>
-							<DialogFooter>
-								<Button type="submit">Save</Button>
-							</DialogFooter>
-						</form>
-					</DialogContent>
-				</Dialog>
+								<DialogFooter>
+									<Button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white">
+										Save
+									</Button>
+								</DialogFooter>
+							</form>
+						</DialogContent>
+					</Dialog>
+				</div>
 			</div>
-		</>
+		</div>
 	);
 };

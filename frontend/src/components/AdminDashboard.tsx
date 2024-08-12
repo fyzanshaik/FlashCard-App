@@ -24,20 +24,36 @@ const AdminDashboard = () => {
 	const handleAddFlashCard = (newCard: CardsList) => {
 		setFlashCards([...flashCards, newCard]);
 	};
-	const handleEditFlashCard = (newCard: CardsList) => {
-		setFlashCards([...flashCards, newCard]);
+
+	const handleEditFlashCard = (index: number, updatedCard: CardsList) => {
+		const updatedCards = [...flashCards];
+		updatedCards[index] = updatedCard;
+		setFlashCards(updatedCards);
 	};
+
+	const handleDeleteFlashCard = (index: number) => {
+		const updatedCards = flashCards.filter((_, i) => i !== index);
+		setFlashCards(updatedCards);
+	};
+
 	return (
-		<>
+		<div className="min-h-screen bg-gray-900 text-white">
 			<AdminHeader onAddFlashCard={handleAddFlashCard} />
-			{/* <div className="">All Fla/sh Cards: </div> */}
-			<br></br>
-			<div>
-				{flashCards.map((item, id) => (
-					<ListItem key={id} title={item.Title} value={item.Answer} onEditFlashCard={handleEditFlashCard} />
-				))}
+			<div className="container mx-auto px-4 py-8">
+				<h2 className="text-2xl font-bold mb-4">All Flash Cards</h2>
+				<div className="space-y-4">
+					{flashCards.map((item, id) => (
+						<ListItem
+							key={id}
+							title={item.Title}
+							value={item.Answer}
+							onEditFlashCard={(updatedCard) => handleEditFlashCard(id, updatedCard)}
+							onDeleteFlashCard={() => handleDeleteFlashCard(id)}
+						/>
+					))}
+				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 
