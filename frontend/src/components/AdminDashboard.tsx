@@ -1,57 +1,75 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AdminHeader } from './AdminHeader';
+import axios from 'axios';
 import ListItem from './ListItem';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CardsList {
+	id: number;
 	Title: string;
 	Answer: string;
 }
-const fakeFlashCards: CardsList[] = [
-	{ Title: 'What is React?', Answer: 'A JavaScript library for building user interfaces.' },
-	{ Title: 'What is TypeScript?', Answer: 'A typed superset of JavaScript that compiles to plain JavaScript.' },
-	{ Title: 'Explain useState in React.', Answer: 'useState is a Hook that lets you add state to functional components.' },
-	{ Title: 'What is an interface in TypeScript?', Answer: 'An interface defines the shape of an object, describing its structure.' },
-	{ Title: "What does the 'map' function do in JavaScript?", Answer: "The 'map' function creates a new array by applying a function to each element of an existing array." },
-	{ Title: 'What is a component in React?', Answer: 'A component is a reusable piece of UI that can manage its own state and props.' },
-	{ Title: 'What is Tailwind CSS?', Answer: 'A utility-first CSS framework for rapidly building custom designs.' },
-	{ Title: 'What is the purpose of useEffect in React?', Answer: 'useEffect lets you perform side effects in function components.' },
-	{ Title: 'What is Prisma?', Answer: 'Prisma is an open-source ORM for Node.js and TypeScript that helps developers build faster and type-safe database access.' },
-	{ Title: 'What is the difference between Props and State in React?', Answer: 'Props are used to pass data from parent to child components, while state is local data managed within a component.' },
-];
 const AdminDashboard = () => {
-	const [flashCards, setFlashCards] = useState<CardsList[]>(fakeFlashCards);
-
+	const [flashCards, setFlashCards] = useState<CardsList[]>([]);
+	const [loading, setLoading] = useState(false);
 	const handleAddFlashCard = (newCard: CardsList) => {
-		setFlashCards([...flashCards, newCard]);
+		console.log(newCard);
+		axios
+			.post('http://localhost:8080/add-flash-card', newCard)
+			.then(() => {
+				setLoading(true);
+			})
+			.catch((err) => console.log(err));
 	};
 
-	const handleEditFlashCard = (index: number, updatedCard: CardsList) => {
-		const updatedCards = [...flashCards];
-		updatedCards[index] = updatedCard;
-		setFlashCards(updatedCards);
+	const handleEditFlashCard = (updatedCard: CardsList, id: number) => {
+		// console.log(updatedCard, id);
+		axios
+			.put(`http://localhost:8080/edit-flash-card/${id}`, updatedCard)
+			.then(() => {
+				setLoading(true);
+			})
+			.catch((err) => console.log(err));
 	};
 
-	const handleDeleteFlashCard = (index: number) => {
-		const updatedCards = flashCards.filter((_, i) => i !== index);
-		setFlashCards(updatedCards);
+	const handleDeleteFlashCard = (id: number) => {
+		axios
+			.delete(`http://localhost:8080/delete-flash-card/${id}`)
+			.then(() => {
+				setLoading(true);
+			})
+			.catch((err) => console.log(err));
 	};
+
+	useEffect(() => {
+		setLoading(true);
+		axios.get<CardsList[]>('http://localhost:8080/get-flash-cards').then((response) => {
+			// console.log(response.data);
+			setFlashCards(response.data);
+			setLoading(false);
+		});
+	}, [loading]);
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
-			<AdminHeader onAddFlashCard={handleAddFlashCard} />
+			<AdminHeader data={flashCards} onAddFlashCard={handleAddFlashCard} />
 			<div className="container mx-auto px-4 py-8">
 				<h2 className="text-2xl font-bold mb-4">All Flash Cards</h2>
-				<div className="space-y-4">
-					{flashCards.map((item, id) => (
-						<ListItem
-							key={id}
-							title={item.Title}
-							value={item.Answer}
-							onEditFlashCard={(updatedCard) => handleEditFlashCard(id, updatedCard)}
-							onDeleteFlashCard={() => handleDeleteFlashCard(id)}
-						/>
-					))}
-				</div>
+				{loading ? (
+					<div className="flex flex-col space-y-3">
+						<Skeleton className="h-[125px] w-[250px] rounded-xl" />
+						<div className="space-y-2">
+							<Skeleton className="h-4 w-[250px]" />
+							<Skeleton className="h-4 w-[200px]" />
+						</div>
+					</div>
+				) : (
+					<div className="space-y-4">
+						{flashCards.map((item, id) => (
+							<ListItem key={id} id={item.id} title={item.Title} value={item.Answer} onEditFlashCard={handleEditFlashCard} onDeleteFlashCard={handleDeleteFlashCard} />
+						))}
+					</div>
+				)}
 			</div>
 		</div>
 	);

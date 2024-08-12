@@ -4,27 +4,36 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useState } from 'react';
 
 interface FormValues {
 	Title: string;
 	Answer: string;
 }
-
+interface CardsList {
+	id: number;
+	Title: string;
+	Answer: string;
+}
 interface AdminHeaderProps {
 	onAddFlashCard: (data: FormValues) => void;
+	data: CardsList[];
 }
 
-export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard }) => {
+export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard, data }) => {
 	const { register, handleSubmit, reset } = useForm<FormValues>();
 	const navigate = useNavigate();
+	const [open, setOpen] = useState(false);
 
 	const handleClick = () => {
-		navigate('/start-revision');
+		navigate('/start-revision', { state: data });
 	};
 
 	const onSubmit: SubmitHandler<FormValues> = (data) => {
+		console.log(data);
 		onAddFlashCard(data);
 		reset();
+		setOpen(false);
 	};
 
 	return (
@@ -35,9 +44,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard }) => {
 					<Button variant="outline" onClick={handleClick} className="text-white border-gray-400 bg-black hover:bg-slate-600 hover:text-white">
 						Start Revision
 					</Button>
-					<Dialog>
+					<Dialog open={open} onOpenChange={setOpen}>
 						<DialogTrigger asChild>
-							<Button variant="outline" className="text-white border-gray-400 bg-black hover:bg-slate-600 hover:text-white">
+							<Button variant="outline" onClick={() => setOpen(true)} className="text-white border-gray-400 bg-black hover:bg-slate-600 hover:text-white">
 								Add New Card
 							</Button>
 						</DialogTrigger>
