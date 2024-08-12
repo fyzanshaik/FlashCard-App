@@ -26,7 +26,7 @@ export const RevisionPage: React.FC = () => {
 	const totalCards = flashCards.length;
 	const [timer, setTimer] = useState(0);
 	const { toast } = useToast();
-
+	console.log('revisoon');
 	const shuffledArray = useMemo(() => {
 		return shuffleArray(flashCards);
 	}, [flashCards]);
