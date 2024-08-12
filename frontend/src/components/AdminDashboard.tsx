@@ -27,7 +27,7 @@ const AdminDashboard = () => {
 			const cardWithId: CardsList = { ...newCard, id: Date.now() };
 			await axios.post(`${API_URL}/add-flash-card`, cardWithId);
 			setStateChange(true);
-			setLoading(false);
+			// setLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
 			const cardWithId: CardsList = { ...updatedCard, id };
 			await axios.put(`${API_URL}/edit-flash-card/${id}`, cardWithId);
 			setStateChange(true);
-			setLoading(false);
+			// setLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
 			await axios.delete(`${API_URL}/delete-flash-card/${id}`);
 			setStateChange(true);
 
-			setLoading(false);
+			// setLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
