@@ -1,7 +1,3 @@
-Here’s a detailed README file for your project:
-
----
-
 # 📚 Flashcard Learning Tool
 
 Welcome to the Flashcard Learning Tool! This project is designed to help users study and learn using flashcards, with a focus on simplicity and efficiency. The tool includes both a frontend and a backend, allowing for a fully functional application with database integration.
@@ -115,6 +111,10 @@ VITE_API_URL=http://localhost:8080
 DATABASE_URL=your_postgresql_database_url
 ```
 
+### Initial Design
+![Admin Dashboard](image.png)
+![Revision Page](image-1.png)
+
 ### Additional Enhancements
 
 - **Reverse Proxy**: The frontend files are served through a reverse proxy on an EC2 instance.
@@ -129,6 +129,3 @@ Contributions are welcome! Please fork this repository and create a pull request
 
 This project is licensed under the MIT License.
 
----
-
-Feel free to adjust any sections as needed to match your project!
