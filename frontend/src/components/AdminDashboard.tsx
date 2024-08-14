@@ -12,11 +12,11 @@ import { Button } from '@/components/ui/button';
 const ThemeContext = createContext<{
 	isDark: boolean;
 	toggleTheme: () => void;
-}>({ isDark: false, toggleTheme: () => {} });
+}>({ isDark: true, toggleTheme: () => {} }); // Default to dark mode
 
 // Theme provider component
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-	const [isDark, setIsDark] = useState(false);
+	const [isDark, setIsDark] = useState(true); // Start in dark mode
 	const toggleTheme = () => setIsDark(!isDark);
 
 	return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
@@ -42,7 +42,7 @@ interface AddCardFormValue {
 	answer: string;
 }
 
-const API_URL = import.meta.env.VITE_LOCALURL;
+const API_URL = import.meta.env.VITE_NEW;
 
 const Dashboard = () => {
 	const [flashCards, setFlashCards] = useState<CardsList[]>([]);
@@ -116,23 +116,27 @@ const Dashboard = () => {
 
 	return (
 		<motion.div
-			className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}
-			animate={{ backgroundColor: isDark ? '#F5F5F5' : '#111827' }}
+			className={`min-h-screen ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'} font-['Inter']`}
+			animate={{ backgroundColor: isDark ? '#111827' : '#F9FAFB' }}
 			transition={{ duration: 0.5 }}
 		>
 			<AdminHeader onAddFlashCard={handleAddFlashCard} data={flashCards} />
 			<div className="container mx-auto px-4 py-8">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-3xl font-bold">Flash Cards Dashboard</h2>
-					<Button onClick={toggleTheme} variant="outline" size="icon">
-						{isDark ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+					<Button
+						onClick={toggleTheme}
+						variant="outline"
+						size="icon"
+						className={`${isDark ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-800'} hover:bg-blue-500 hover:text-white transition-all duration-300`}
+					>
+						{isDark ? <Sun className="h-[1.5rem] w-[1.5rem]" /> : <Moon className="h-[1.5rem] w-[1.5rem]" />}
 					</Button>
 				</div>
-				<Card className={`${isDark ? 'bg-black' : 'bg-white'} bg-opacity-50 backdrop-blur-lg shadow-xl transition-colors duration-500`}>
+				<Card className={`${isDark ? 'bg-gray-800' : 'bg-white'} shadow-lg rounded-lg border-none`}>
 					<CardContent className="p-6">
 						{loading ? (
 							<div className="flex justify-center items-center h-64">
-								<Loader2 className="w-8 h-8 animate-spin" />
+								<Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
 							</div>
 						) : (
 							<ScrollArea className="h-[70vh] pr-4">

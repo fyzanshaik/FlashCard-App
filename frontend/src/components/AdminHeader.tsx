@@ -36,7 +36,7 @@ interface AdminHeaderProps {
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard, data }) => {
-	const API_URL = import.meta.env.VITE_LOCALURL;
+	const API_URL = import.meta.env.VITE_NEW;
 	const { register: registerAddCard, handleSubmit: handleAddCardSubmit, reset } = useForm<AddCardFormValue>();
 	const navigate = useNavigate();
 	const [openAddCard, setOpenAddCard] = useState(false);
@@ -105,7 +105,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onAddFlashCard, data }
 		<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="bg-gray-900 text-white p-6 shadow-lg">
 			<div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
 				<motion.h1
-					className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-4 md:mb-0"
+					className="text-4xl  text-transparent bg-clip-text text-white font-mono mb-4 md:mb-0"
 					initial={{ scale: 0.9 }}
 					animate={{ scale: 1 }}
 					transition={{ duration: 0.5, type: 'spring', stiffness: 120 }}
