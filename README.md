@@ -112,6 +112,7 @@ DATABASE_URL=your_postgresql_database_url
 ```
 
 ### Initial Design
+
 ![Admin Dashboard](image.png)
 ![Revision Page](image-1.png)
 

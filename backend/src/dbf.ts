@@ -1,4 +1,5 @@
-const url = 'http://ec2-13-60-197-192.eu-north-1.compute.amazonaws.com:8080/api/add-flash-card';
+// const url = 'https://backend-ruby-two-32.vercel.app/api/add-flash-card';
+const url = 'http://localhost:8080/api/add-flash-card';
 const fakeFlashCards = [
 	{ Title: 'What is React?', Answer: 'A JavaScript library for building user interfaces.' },
 	{ Title: 'What is TypeScript?', Answer: 'A typed superset of JavaScript that compiles to plain JavaScript.' },

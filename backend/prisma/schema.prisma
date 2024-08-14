@@ -13,8 +13,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model FlashCard {
+model UserFlashCard {
   id     Int    @id @default(autoincrement())
-  Title  String
-  Answer String
+  title  String
+  answer String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([id, userId])
+}
+
+model PublicFlashCard {
+  id     Int    @id @default(autoincrement())
+  title  String
+  answer String
+}
+
+model User {
+  id         Int             @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  username   String          @unique
+  password   String
+  flashCards UserFlashCard[]
 }

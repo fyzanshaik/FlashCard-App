@@ -1,40 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import '../../public/flip-card.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FlipCardProps {
 	title: string;
 	answer: string;
-	isFrontVisible: boolean;
+	initiallyFlipped?: boolean;
+	onFlip?: (isFlipped: boolean) => void;
 }
 
-const FlipCard: React.FC<FlipCardProps> = ({ title, answer }) => {
-	const [isFlipped, setIsFlipped] = useState(false);
+const FlipCard: React.FC<FlipCardProps> = ({ title, answer, initiallyFlipped = false, onFlip }) => {
+	const [isFlipped, setIsFlipped] = useState(initiallyFlipped);
 
 	useEffect(() => {
-		// Reset the flip state when the card changes
-		setIsFlipped(false);
-	}, [title, answer]);
+		setIsFlipped(initiallyFlipped);
+	}, [title, answer, initiallyFlipped]);
 
-	const handleClick = () => {
-		setIsFlipped(!isFlipped);
+	const handleFlip = () => {
+		setIsFlipped((prev) => {
+			const newState = !prev;
+			onFlip?.(newState);
+			return newState;
+		});
+	};
+
+	const handleKeyPress = (event: React.KeyboardEvent) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			handleFlip();
+		}
 	};
 
 	return (
-		<div className={`flip-card w-[350px] h-[400px] rounded-lg cursor-pointer ${isFlipped ? 'flipped' : ''}`} onClick={handleClick}>
-			<div className="flip-card-inner">
-				<div className="flip-card-front flex items-center justify-center">
-					<div className="w-full h-full bg-black p-4 rounded-lg shadow-lg flex items-center justify-center">
-						<h1 className="text-2xl font-bold text-white">{title}</h1>
-					</div>
-				</div>
-				<div className="flip-card-back flex items-center justify-center">
-					<div className="w-full h-full bg-white p-4 rounded-lg shadow-sm flex items-center justify-center">
-						<h1 className="text-2xl font-bold text-black">{answer}</h1>
-					</div>
-				</div>
+		<motion.div className="flip-card w-full h-full md:w-[350px] md:h-[400px] rounded-lg" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+			<div
+				className="flip-card-inner relative w-full h-full"
+				role="button"
+				tabIndex={0}
+				onClick={handleFlip}
+				onKeyPress={handleKeyPress}
+				aria-pressed={isFlipped}
+				aria-label={`Flip card. Current side: ${isFlipped ? 'Answer' : 'Question'}`}
+			>
+				<AnimatePresence initial={false} mode="wait">
+					{!isFlipped ? <CardSide key="front" className="bg-black text-white" content={title} /> : <CardSide key="back" className="bg-white text-black" content={answer} />}
+				</AnimatePresence>
 			</div>
-		</div>
+		</motion.div>
 	);
 };
+
+interface CardSideProps {
+	className: string;
+	content: string;
+}
+
+const CardSide: React.FC<CardSideProps> = ({ className, content }) => (
+	<motion.div
+		className={`absolute w-full h-full rounded-lg shadow-lg flex items-center justify-center p-4 ${className}`}
+		initial={{ rotateY: 90 }}
+		animate={{ rotateY: 0 }}
+		exit={{ rotateY: -90 }}
+		transition={{ duration: 0.3 }}
+	>
+		<h1 className="text-lg md:text-2xl font-bold text-center">{content}</h1>
+	</motion.div>
+);
 
 export default FlipCard;

@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
-
 import AdminDashboard from './components/AdminDashboard';
 import { RevisionPage } from './components/RevisionPage';
 export const App = () => {

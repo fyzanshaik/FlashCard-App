@@ -1,6 +1,7 @@
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
-import { HomeIcon } from '@radix-ui/react-icons'; // Assuming you're using Radix icons
+import { Home } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export const RevisionHeader = () => {
 	const navigate = useNavigate();
@@ -9,14 +10,21 @@ export const RevisionHeader = () => {
 	};
 
 	return (
-		<div className="bg-gray-900 text-white p-4 shadow-md">
+		<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="bg-gray-900 text-white p-6 shadow-lg">
 			<div className="container mx-auto flex justify-between items-center">
-				<h1 className="text-4xl font-bold text-pink-500">FLASHCARDS</h1>
-				<Button variant="outline" onClick={handleClick} className="text-slate-300 border-gray-400 bg-black transition duration-300">
-					<HomeIcon className="h-4 w-4 mr-2" />
+				<motion.h1
+					className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600"
+					initial={{ scale: 0.9 }}
+					animate={{ scale: 1 }}
+					transition={{ duration: 0.5, type: 'spring', stiffness: 120 }}
+				>
+					FLASHCARDS
+				</motion.h1>
+				<Button variant="outline" onClick={handleClick} className="text-white border-gray-400 bg-black hover:bg-slate-700 hover:text-white transition-all duration-300 transform hover:scale-105">
+					<Home className="h-5 w-5 mr-2" />
 					HOME
 				</Button>
 			</div>
-		</div>
+		</motion.div>
 	);
 };

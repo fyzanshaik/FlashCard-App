@@ -1,83 +1,162 @@
-import express, { Request, Response } from 'express';
+// flashCardController.ts
+import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { flashcardSchema } from '../zod-type';
+import { AuthenticatedRequest } from '../utils/types';
+import redisClient from '../redisClient';
 
 const prisma = new PrismaClient();
-const fc = prisma.flashCard;
 
-// Get all flashcards
-export const getAllCards = async (req: Request, res: Response) => {
-	console.log('Received request to get all flashcards');
+export const getAllCards = async (req: AuthenticatedRequest, res: Response) => {
+	const user = req.user;
+
 	try {
-		const flashcards = await fc.findMany({
-			orderBy: {
-				id: 'asc',
-			},
-		});
-		console.log('Fetched flashcards:', flashcards);
-		res.status(200).json(flashcards);
+		let flashCards;
+
+		if (!user) {
+			const cachedData = await redisClient.get('publicFlashCards');
+			if (cachedData) {
+				console.log('Serving from cache');
+				return res.json(JSON.parse(cachedData));
+			}
+
+			flashCards = await prisma.publicFlashCard.findMany({
+				orderBy: {
+					id: 'asc',
+				},
+			});
+
+			await redisClient.setEx('publicFlashCards', 3600, JSON.stringify(flashCards)); // Cache for 1 hour
+		} else {
+			const cacheKey = `userFlashCards:${user.userId}`;
+			const cachedData = await redisClient.get(cacheKey);
+			if (cachedData) {
+				console.log('Serving from cache');
+				return res.json(JSON.parse(cachedData));
+			}
+
+			flashCards = await prisma.userFlashCard.findMany({
+				where: {
+					userId: user.userId,
+				},
+				orderBy: {
+					id: 'asc',
+				},
+			});
+
+			await redisClient.setEx(cacheKey, 3600, JSON.stringify(flashCards)); // Cache for 1 hour
+		}
+
+		res.json(flashCards);
 	} catch (error) {
 		console.error('Error fetching flashcards:', error);
-		res.status(500).json({ error: 'An error occurred while fetching flashcards.' });
+		res.status(500).json({ error: 'Internal Server Error' });
 	}
 };
 
-// Add a new flashcard
-export const addFlashCard = async (req: Request, res: Response) => {
-	console.log('Received request to add a flashcard with data:', req.body);
-	try {
-		const { Title, Answer } = req.body;
-		console.log('Validating flashcard data');
-		const validatedFlashcard = flashcardSchema.parse({ Title, Answer });
+export const addFlashCard = async (req: AuthenticatedRequest, res: Response) => {
+	const user = req.user;
 
-		console.log('Validated flashcard data:', validatedFlashcard);
-		const newFlashcard = await fc.create({
-			data: validatedFlashcard,
-		});
-		console.log('Created new flashcard:', newFlashcard);
-		res.status(201).json(newFlashcard);
+	try {
+		let newCard;
+		const data = flashcardSchema.parse(req.body);
+
+		if (!user) {
+			newCard = await prisma.publicFlashCard.create({
+				data: {
+					title: data.title,
+					answer: data.answer,
+				},
+			});
+
+			await redisClient.del('publicFlashCards'); // Invalidate cache
+		} else {
+			newCard = await prisma.userFlashCard.create({
+				data: {
+					title: data.title,
+					answer: data.answer,
+					userId: user.userId,
+				},
+			});
+
+			await redisClient.del(`userFlashCards:${user.userId}`); // Invalidate cache
+		}
+
+		res.json(newCard);
 	} catch (error) {
 		console.error('Error adding flashcard:', error);
-		res.status(500).json({ error: 'An error occurred while adding the flashcard.' });
+		res.status(400).json({ error: 'Invalid data' });
 	}
 };
 
-// Edit an existing flashcard
-export const editCard = async (req: Request, res: Response) => {
+export const editCard = async (req: AuthenticatedRequest, res: Response) => {
 	const { id } = req.params;
-	console.log(`Received request to edit flashcard with id: ${id}`);
+	const user = req.user;
 
 	try {
-		const { Title, Answer } = req.body;
-		console.log('Validating updated flashcard data');
-		const validatedFlashcard = flashcardSchema.parse({ Title, Answer });
+		const data = flashcardSchema.parse(req.body);
 
-		console.log('Validated flashcard data:', validatedFlashcard);
-		const updatedFlashcard = await fc.update({
-			where: { id: Number(id) },
-			data: validatedFlashcard,
-		});
-		console.log(`Updated flashcard with id ${id}:`, updatedFlashcard);
-		res.status(200).json(updatedFlashcard);
+		let updatedCard;
+
+		if (!user) {
+			updatedCard = await prisma.publicFlashCard.update({
+				where: { id: Number(id) },
+				data: {
+					title: data.title,
+					answer: data.answer,
+				},
+			});
+
+			await redisClient.del('publicFlashCards'); // Invalidate cache
+		} else {
+			updatedCard = await prisma.userFlashCard.update({
+				where: {
+					id_userId: {
+						id: Number(id),
+						userId: user.userId,
+					},
+				},
+				data: {
+					title: data.title,
+					answer: data.answer,
+				},
+			});
+
+			await redisClient.del(`userFlashCards:${user.userId}`); // Invalidate cache
+		}
+
+		res.json(updatedCard);
 	} catch (error) {
-		console.error(`Error updating flashcard with id ${id}:`, error);
-		res.status(500).json({ error: `An error occurred while updating the flashcard with id ${id}.` });
+		console.error('Error updating card:', error);
+		res.status(400).json({ error: 'Invalid data or card not found' });
 	}
 };
 
-// Delete a flashcard
-export const deleteCard = async (req: Request, res: Response) => {
+export const deleteCard = async (req: AuthenticatedRequest, res: Response) => {
 	const { id } = req.params;
-	console.log(`Received request to delete flashcard with id: ${id}`);
+	const user = req.user;
 
 	try {
-		const deletedFlashcard = await fc.delete({
-			where: { id: Number(id) },
-		});
-		console.log(`Deleted flashcard with id ${id}:`, deletedFlashcard);
-		res.status(200).json(deletedFlashcard);
+		if (!user) {
+			await prisma.publicFlashCard.delete({ where: { id: Number(id) } });
+
+			await redisClient.del('publicFlashCards'); // Invalidate cache
+			res.json({ message: 'Public card deleted successfully' });
+		} else {
+			await prisma.userFlashCard.delete({
+				where: {
+					id_userId: {
+						id: Number(id),
+						userId: user.userId,
+					},
+				},
+			});
+
+			await redisClient.del(`userFlashCards:${user.userId}`); // Invalidate cache
+			res.json({ message: 'User card deleted successfully' });
+		}
 	} catch (error) {
-		console.error(`Error deleting flashcard with id ${id}:`, error);
-		res.status(500).json({ error: `An error occurred while deleting the flashcard with id ${id}.` });
+		console.error('Error deleting card:', error);
+		res.status(400).json({ error: 'Invalid data or card not found' });
 	}
 };
