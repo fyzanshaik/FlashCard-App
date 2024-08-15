@@ -15,6 +15,7 @@ Welcome to the Flashcard Learning Tool! This project is designed to help users s
 ### Frontend
 - **React.js**
 - **Tailwind CSS**
+- **Framer Motion**
 - **shadcn**
 - **axios**
 - **Vite**
@@ -25,6 +26,7 @@ Welcome to the Flashcard Learning Tool! This project is designed to help users s
 - **TypeScript**
 - **Node.js**
 - **Express**
+- **Redis**
 - **Zod**
 - **Prisma**
 
